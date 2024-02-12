@@ -1,0 +1,27 @@
+{
+  "id": 1,
+  "title": "Bang!",
+  "image": "path/to/image",
+  "description": "description",
+  "suit": "hearts",
+  "rank": "K",
+  "type": "onetime",
+  "target": "one",
+  "cardAction": "damage",
+  "cardBlockers": [2, 1],
+  "amountActions": 1,
+  "amountBlockers": 1,
+  "distance": 1
+}
+
+
+
+{
+  "id": 1,
+  "name": "Billy the Kid",
+  "userName": "User",
+  "health": 4,
+  "image": "path/to/image",
+  "effect": "unlimited bang",
+  "cardEffects": ["id1", "id2"]
+}
