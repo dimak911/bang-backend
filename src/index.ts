@@ -4,6 +4,8 @@ import { Server } from 'socket.io';
 import cors from 'cors'
 
 import 'dotenv/config'
+import { SocketEvents } from "./common/constant/socketEvents";
+import { SetupSocketServer } from "./config/socket.config";
 
 const PORT = process.env.PORT
 
@@ -12,27 +14,16 @@ const app = express();
 app.use(cors())
 
 const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*"
-  }
-});
+
 
 
 app.get('/', (req, res) => {
   res.send('Works!')
 });
 
-io.on('connection', (socket) => {
 
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
+const io = SetupSocketServer(server);
 
-    socket.emit('message', `${new Date().toISOString()}: ${msg}`)
-  });
-});
-
-
-server.listen(4000, () => {
-  console.log('server running at http://localhost:4000');
+server.listen(PORT, () => {
+  console.log('server running at: ' + PORT);
 });
