@@ -1,9 +1,11 @@
 import express from 'express';
-import { createServer } from 'node:http';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors'
+
+import 'dotenv/config'
+
+const PORT = process.env.PORT
 
 const app = express();
 
@@ -16,7 +18,6 @@ const io = new Server(server, {
   }
 });
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.get('/', (req, res) => {
   res.send('Works!')
@@ -32,6 +33,6 @@ io.on('connection', (socket) => {
 });
 
 
-server.listen(3333, () => {
-  console.log('server running at http://localhost:3000');
+server.listen(PORT || 3001, () => {
+  console.log(`Server running at port ${PORT}`);
 });

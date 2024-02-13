@@ -1,25 +1,26 @@
 {
+  "name": "bang-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@types/express": "^4.17.21",
     "cors": "^2.8.5",
     "dotenv": "^16.4.2",
     "express": "^4.18.2",
-    "socket.io": "^4.7.4",
+    "socket.io": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
-  },
-  "name": "bang-backend",
-  "description": "",
-  "version": "1.0.0",
-  "main": "src/index.js",
-  "scripts": {
-    "start:dev": "nodemon",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "vadymsushkovdev",
-  "license": "ISC",
-  "type": "module",
-  "devDependencies": {
-    "nodemon": "^3.0.3"
   }
 }
