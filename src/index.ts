@@ -3,6 +3,10 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors'
 
+import 'dotenv/config'
+
+const PORT = process.env.PORT
+
 const app = express();
 
 app.use(cors())
@@ -14,18 +18,17 @@ const io = new Server(server, {
   }
 });
 
+
 app.get('/', (req, res) => {
   res.send('Works!')
 });
 
 io.on('connection', (socket) => {
-  
-  console.log('connected:', socket.id)
 
   socket.on('chat message', (msg) => {
     console.log('message: ' + msg);
 
-    io.emit('message', `${new Date().toISOString()}: ${msg}`)
+    socket.emit('message', `${new Date().toISOString()}: ${msg}`)
   });
 });
 

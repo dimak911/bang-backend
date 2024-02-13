@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "es2016",
     "module": "commonjs",
-    "outDir": "./dist",
-    "strict": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "outDir": "./dist"
   },
-  "include": [
-    "./src/**/*.ts"
-  ],
   "exclude": [
     "node_modules"
+  ],
+  "include": [
+    "./src/**/*.ts"
   ]
 }
