@@ -2,23 +2,16 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { MongoClient, ServerApiVersion } from "mongodb";
+import mongoose from "mongoose";
 
-import { MONGODB_URI, ORIGIN, PORT } from "./config";
-
-const mongoClient = new MongoClient(MONGODB_URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+import { DB_PASSWORD, DB_USER, MONGODB_URI, ORIGIN, PORT } from "./config";
 
 const app = express();
 
 app.use(cors());
 
 const server = createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: ORIGIN,
@@ -39,17 +32,25 @@ io.on("connection", (socket) => {
 
 async function run() {
   try {
-    await mongoClient.connect();
-    await mongoClient.db("mongo").command({ ping: 1 });
+    await mongoose.connect(MONGODB_URI, {
+      auth: {
+        username: DB_USER,
+        password: DB_PASSWORD,
+      },
+    });
     console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!",
+      "\x1b[32m%s\x1b[0m",
+      "You successfully connected to MongoDB! 👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀",
     );
 
     server.listen(PORT, () => {
-      console.log(`Server running at port ${PORT}`);
+      console.log(
+        "\x1b[32m%s\x1b[0m",
+        `Server running at port ${PORT} 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀`,
+      );
     });
   } finally {
-    await mongoClient.close();
+    await mongoose.disconnect();
   }
 }
 
