@@ -7,4 +7,5 @@ export const {
   MONGODB_URI = "",
   DB_USER,
   DB_PASSWORD,
+  HOST,
 } = process.env;
