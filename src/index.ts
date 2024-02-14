@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 import { runSeeders } from './seeder';
 import 'dotenv/config';
-import { SetupSocketServer } from './config/socket.config';
+import { setupSocketServer } from './config/socket.config';
 import { DB_PASSWORD, DB_USER, MONGODB_URI } from './config';
 
 const PORT = process.env.PORT;
@@ -22,7 +22,7 @@ app.get('/', async (req, res) => {
   res.send('Works!');
 });
 
-const io = SetupSocketServer(server);
+const io = setupSocketServer(server);
 
 async function run() {
   await mongoose.connect(MONGODB_URI, {

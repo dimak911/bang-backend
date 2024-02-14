@@ -5,8 +5,7 @@ export enum SocketEvents {
   JOIN_ROOM = 'join room',
   USER_CONNECTED = 'user connected',
 
-
-  CHAT_MESSAGE = "chat message"
+  CHAT_MESSAGE = 'chat message',
 }
 
 export enum SocketGameEvents {
