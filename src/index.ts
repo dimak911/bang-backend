@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { runSeeders } from './seeder';
 import 'dotenv/config';
 import { SetupSocketServer } from './config/socket.config';
+import { DB_PASSWORD, DB_USER, MONGODB_URI } from './config';
 
 const PORT = process.env.PORT;
 
@@ -23,21 +24,27 @@ app.get('/', async (req, res) => {
 
 const io = SetupSocketServer(server);
 
-server.listen(PORT, () => {
-  console.log('server running at: ' + PORT);
-});
-console.log(
-  '\x1b[32m%s\x1b[0m',
-  'You successfully connected to MongoDB! 👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀',
-);
+async function run() {
+  await mongoose.connect(MONGODB_URI, {
+    auth: {
+      username: DB_USER,
+      password: DB_PASSWORD,
+    },
+  });
 
-runSeeders(mongoose.connection.db);
-
-server.listen(PORT, () => {
   console.log(
     '\x1b[32m%s\x1b[0m',
-    `Server running at port ${PORT} 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀`,
+    'You successfully connected to MongoDB! 👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀',
   );
-});
+
+  runSeeders(mongoose.connection.db);
+
+  server.listen(PORT, () => {
+    console.log(
+      '\x1b[32m%s\x1b[0m',
+      `Server running at port ${PORT} 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀`,
+    );
+  });
+}
 
 run().catch(console.dir);
