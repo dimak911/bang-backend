@@ -8,12 +8,8 @@
     "strict": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "outDir": "./dist"
+    "outDir": "./dist",
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "./src/**/*.ts"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
