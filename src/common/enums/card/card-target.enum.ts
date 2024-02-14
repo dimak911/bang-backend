@@ -1,5 +1,5 @@
 export enum CardTargetEnum {
-  "ONE" = "one",
-  "ALL" = "all",
-  "SELF" = "self",
+  'ONE' = 'one',
+  'ALL' = 'all',
+  'SELF' = 'self',
 }
