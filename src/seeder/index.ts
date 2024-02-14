@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import { seeders } from "./seeders";
+import { seeders } from './seeders';
 
 export const runSeeders = (mongoConnection: mongoose.mongo.Db) => {
   seeders.map(async ({ collectionName, seeder }) => {

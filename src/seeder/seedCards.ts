@@ -1,16 +1,16 @@
-import CardModel from "../models/Card/card.model";
-import { HOST } from "../config";
-import { CardTypeEnum } from "../common/enums/card/card-type.enum";
-import { CardTargetEnum } from "../common/enums/card/card-target.enum";
-import { CardActionEnum } from "../common/enums/card/card-action.enum";
-import { CardSuitEnum } from "../common/enums/card/card-suit.enum";
-import { CardRankEnum } from "../common/enums/card/card-rank.enum";
+import CardModel from '../models/Card/card.model';
+import { HOST } from '../config';
+import { CardTypeEnum } from '../common/enums/card/card-type.enum';
+import { CardTargetEnum } from '../common/enums/card/card-target.enum';
+import { CardActionEnum } from '../common/enums/card/card-action.enum';
+import { CardSuitEnum } from '../common/enums/card/card-suit.enum';
+import { CardRankEnum } from '../common/enums/card/card-rank.enum';
 
 const missCard = new CardModel({
-  title: "Missed!",
-  slug: "missed",
+  title: 'Missed!',
+  slug: 'missed',
   image: `${HOST}/images/miss.png`,
-  description: "Cancel the hit.",
+  description: 'Cancel the hit.',
   suit: CardSuitEnum.SPADES,
   rank: CardRankEnum.FIVE,
   type: CardTypeEnum.ONETIME,
@@ -25,11 +25,11 @@ const missCard = new CardModel({
 const cards = [
   missCard,
   new CardModel({
-    title: "Bang!",
-    slug: "bang",
+    title: 'Bang!',
+    slug: 'bang',
     image: `${HOST}/images/bang.png`,
     description:
-      "Play on a player at an available distance. He loses 1 unit of health if he fails to cancel the hit.",
+      'Play on a player at an available distance. He loses 1 unit of health if he fails to cancel the hit.',
     suit: CardSuitEnum.HEARTS,
     rank: CardRankEnum.KING,
     type: CardTypeEnum.ONETIME,
@@ -47,7 +47,7 @@ export async function seedCards() {
     await card.save();
 
     if (index === cards.length - 1) {
-      console.log("seedCards DONE!");
+      console.log('seedCards DONE!');
     }
   });
 }

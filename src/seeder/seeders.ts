@@ -1,5 +1,5 @@
-import { seedCards } from "./seedCards";
-import { seedCharacters } from "./seedCharacters";
+import { seedCards } from './seedCards';
+import { seedCharacters } from './seedCharacters';
 
 interface Seeder {
   collectionName: string;
@@ -8,11 +8,11 @@ interface Seeder {
 
 export const seeders: Seeder[] = [
   {
-    collectionName: "cards",
+    collectionName: 'cards',
     seeder: seedCards,
   },
   {
-    collectionName: "characters",
+    collectionName: 'characters',
     seeder: seedCharacters,
   },
 ];
