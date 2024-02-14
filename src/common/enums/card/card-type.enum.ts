@@ -1,4 +1,4 @@
 export enum CardTypeEnum {
-  ONETIME = "onetime",
-  PERMANENT = "permanent",
+  ONETIME = 'onetime',
+  PERMANENT = 'permanent',
 }
