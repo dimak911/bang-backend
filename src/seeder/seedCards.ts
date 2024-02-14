@@ -1,34 +1,53 @@
-import { connect, disconnect } from "mongoose";
-import Card from "../models/card.model";
-import { MONGODB_URI } from "../config";
+import CardModel from '../models/Card/card.model';
+import { HOST } from '../config';
+import { CardTypeEnum } from '../common/enums/card/card-type.enum';
+import { CardTargetEnum } from '../common/enums/card/card-target.enum';
+import { CardActionEnum } from '../common/enums/card/card-action.enum';
+import { CardSuitEnum } from '../common/enums/card/card-suit.enum';
+import { CardRankEnum } from '../common/enums/card/card-rank.enum';
 
-//create your array. i inserted only 1 object here
+const missCard = new CardModel({
+  title: 'Missed!',
+  slug: 'missed',
+  image: `${HOST}/images/miss.png`,
+  description: 'Cancel the hit.',
+  suit: CardSuitEnum.SPADES,
+  rank: CardRankEnum.FIVE,
+  type: CardTypeEnum.ONETIME,
+  target: CardTargetEnum.SELF,
+  cardAction: CardActionEnum.BLOCK,
+  cardBlockers: [],
+  actionAmount: 1,
+  blockAmount: 1,
+  distance: 1,
+});
+
 const cards = [
-  new Card({
-    image:
-      "https://static.seattletimes.com/wp-content/uploads/2018/01/a8e801dc-f665-11e7-bf8f-ddd02ba4a187-780x1181.jpg",
-    title: "Origin",
-    author: "Dan Brown",
+  missCard,
+  new CardModel({
+    title: 'Bang!',
+    slug: 'bang',
+    image: `${HOST}/images/bang.png`,
     description:
-      "2017 mystery thriller novel. Dan Brown is back with another thriller so moronic you can feel your IQ points flaking away like dandruff",
-    price: 12,
+      'Play on a player at an available distance. He loses 1 unit of health if he fails to cancel the hit.',
+    suit: CardSuitEnum.HEARTS,
+    rank: CardRankEnum.KING,
+    type: CardTypeEnum.ONETIME,
+    target: CardTargetEnum.ONE,
+    cardAction: CardActionEnum.DAMAGE,
+    cardBlockers: [missCard],
+    actionAmount: 1,
+    blockAmount: 1,
+    distance: 1,
   }),
 ];
 
-connect(MONGODB_URI)
-  .catch((err) => {
-    console.log(err.stack);
-    process.exit(1);
-  })
-  .then(() => {
-    console.log("connected to db in development environment");
+export async function seedCards() {
+  cards.map(async (card, index) => {
+    await card.save();
+
+    if (index === cards.length - 1) {
+      console.log('seedCards DONE!');
+    }
   });
-
-cards.map(async (card, index) => {
-  await card.save();
-
-  if (index === cards.length - 1) {
-    console.log("DONE!");
-    await disconnect();
-  }
-});
+}

@@ -1,14 +1,17 @@
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import cors from "cors";
-import mongoose from "mongoose";
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import mongoose from 'mongoose';
 
-import { DB_PASSWORD, DB_USER, MONGODB_URI, ORIGIN, PORT } from "./config";
+import { DB_PASSWORD, DB_USER, MONGODB_URI, ORIGIN, PORT } from './config';
+import { runSeeders } from './seeder';
 
 const app = express();
 
 app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
 
 const server = createServer(app);
 
@@ -18,40 +21,39 @@ const io = new Server(server, {
   },
 });
 
-app.get("/", (req, res) => {
-  res.send("Works!");
+app.get('/', async (req, res) => {
+  res.send('Works!');
 });
 
-io.on("connection", (socket) => {
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
+io.on('connection', (socket) => {
+  socket.on('chat message', (msg) => {
+    console.log('message: ' + msg);
 
-    socket.emit("message", `${new Date().toISOString()}: ${msg}`);
+    socket.emit('message', `${new Date().toISOString()}: ${msg}`);
   });
 });
 
 async function run() {
-  try {
-    await mongoose.connect(MONGODB_URI, {
-      auth: {
-        username: DB_USER,
-        password: DB_PASSWORD,
-      },
-    });
-    console.log(
-      "\x1b[32m%s\x1b[0m",
-      "You successfully connected to MongoDB! 👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀",
-    );
+  await mongoose.connect(MONGODB_URI, {
+    auth: {
+      username: DB_USER,
+      password: DB_PASSWORD,
+    },
+  });
 
-    server.listen(PORT, () => {
-      console.log(
-        "\x1b[32m%s\x1b[0m",
-        `Server running at port ${PORT} 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀`,
-      );
-    });
-  } finally {
-    await mongoose.disconnect();
-  }
+  console.log(
+    '\x1b[32m%s\x1b[0m',
+    'You successfully connected to MongoDB! 👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀👨‍🚀',
+  );
+
+  runSeeders(mongoose.connection.db);
+
+  server.listen(PORT, () => {
+    console.log(
+      '\x1b[32m%s\x1b[0m',
+      `Server running at port ${PORT} 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀`,
+    );
+  });
 }
 
 run().catch(console.dir);
