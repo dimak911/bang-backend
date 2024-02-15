@@ -1,6 +1,6 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
-import { ICharacter } from "./character.interface";
+import { ICharacter } from './character.interface';
 
 const characterSchema = new Schema<ICharacter>({
   name: { type: String, required: true },
@@ -9,6 +9,6 @@ const characterSchema = new Schema<ICharacter>({
   userName: String,
 });
 
-const CharacterModel = model("Character", characterSchema);
+const CharacterModel = model('Character', characterSchema);
 
 export default CharacterModel;
