@@ -4,7 +4,6 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 
 import { runSeeders } from './seeder';
-import 'dotenv/config';
 import { setupSocketServer } from './config/socket.config';
 import { DB_PASSWORD, DB_USER, MONGODB_URI } from './config';
 

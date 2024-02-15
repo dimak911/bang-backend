@@ -13,8 +13,9 @@ export function setupSocketServer(server: http.Server): Server {
   });
 
   io.on(SocketEvents.CONNECTION, (socket) => {
-    socket.on(SocketEvents.JOIN_ROOM, (room: string | undefined) => {
-      const roomId = room ? room : socket.id;
+    const roomId = socket.id;
+
+    socket.on(SocketEvents.JOIN_ROOM, () => {
       socket.join(roomId);
       io.to(roomId).emit(SocketEvents.USER_CONNECTED, {
         userId: socket.id,
@@ -27,7 +28,7 @@ export function setupSocketServer(server: http.Server): Server {
     });
 
     socket.on(SocketEvents.CHAT_MESSAGE, (msg) => {
-      socket.emit('message', `${new Date().toISOString()}: ${msg}`);
+      io.to(roomId).emit('message', `${new Date().toISOString()}: ${msg}`);
     });
   });
 
