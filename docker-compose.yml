@@ -6,7 +6,7 @@ services:
     container_name: bang_mongo_db
     restart: always
     volumes:
-      - mongo-data:/data
+      - mongo-data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
