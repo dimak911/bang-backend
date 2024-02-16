@@ -8,4 +8,5 @@ export const {
   DB_USER,
   DB_PASSWORD,
   HOST,
+  REDIS_LINK = '',
 } = process.env;
