@@ -1,9 +1,13 @@
-import {
-  SocketEvents,
-  SocketGameEvents,
-} from '../common/constant/socketEvents';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import * as http from 'http';
+import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
+import { PlayerHandler } from '../services/sockets/playerHandler';
+
+declare module 'socket.io' {
+  interface Socket {
+    username: string;
+  }
+}
 
 export function setupSocketServer(server: http.Server): Server {
   const io = new Server(server, {
@@ -12,24 +16,23 @@ export function setupSocketServer(server: http.Server): Server {
     },
   });
 
-  io.on(SocketEvents.CONNECTION, (socket) => {
-    const roomId = socket.id;
+  const onConnection = (socket: Socket) => {
+    PlayerHandler(io, socket);
+  };
 
-    socket.on(SocketEvents.JOIN_ROOM, () => {
-      socket.join(roomId);
-      io.to(roomId).emit(SocketEvents.USER_CONNECTED, {
-        userId: socket.id,
-        roomId: roomId,
-      });
-    });
+  io.use((socket, next) => {
+    const username = socket.handshake.auth.username;
+    if (!username) {
+      return next(new Error('invalid username'));
+    }
+    socket.username = username;
+    next();
+  });
 
-    socket.on(SocketGameEvents.BANG, (room: string, targetId) => {
-      io.to(room).emit(SocketGameEvents.BANG, { action: 'dmg' });
-    });
+  io.on(SocketEventsEnum.CONNECTION, (socket: Socket) => {
+    socket.onAny((event, ...args) => console.log('logger: ', event, ...args));
 
-    socket.on(SocketEvents.CHAT_MESSAGE, (msg) => {
-      io.to(roomId).emit('message', `${new Date().toISOString()}: ${msg}`);
-    });
+    onConnection(socket);
   });
 
   return io;
