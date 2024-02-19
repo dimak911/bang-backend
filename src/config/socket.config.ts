@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
 import { PlayerHandler } from '../services/sockets/playerHandler';
+import { instrument } from '@socket.io/admin-ui';
 
 declare module 'socket.io' {
   interface Socket {
@@ -12,8 +13,18 @@ declare module 'socket.io' {
 export function setupSocketServer(server: http.Server): Server {
   const io = new Server(server, {
     cors: {
-      origin: '*',
+      origin: [
+        'https://admin.socket.io',
+        'http://localhost:3003',
+        'http://localhost:3000',
+      ],
+      credentials: true,
     },
+  });
+
+  instrument(io, {
+    auth: false,
+    mode: 'development',
   });
 
   const onConnection = (socket: Socket) => {
