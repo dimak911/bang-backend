@@ -1,5 +1,6 @@
 export enum SocketEventsEnum {
   CONNECTION = 'connection',
+  DISCONNECTED = 'disconnected',
   DISCONNECT = 'disconnect',
 
   JOIN_ROOM = 'join room',
