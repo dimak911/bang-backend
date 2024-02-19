@@ -1,36 +1,48 @@
-import {
-  SocketEvents,
-  SocketGameEvents,
-} from '../common/constant/socketEvents';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import * as http from 'http';
+import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
+import { playerHandler } from '../services/sockets/player.handler';
+import { instrument } from '@socket.io/admin-ui';
 
-export function setupSocketServer(server: http.Server): Server {
+declare module 'socket.io' {
+  interface Socket {
+    username: string;
+  }
+}
+
+export function setupSocketServer(server: http.Server): void {
   const io = new Server(server, {
     cors: {
-      origin: '*',
+      origin: [
+        'https://admin.socket.io',
+        'http://localhost:3003',
+        'http://localhost:3000',
+      ],
+      credentials: true,
     },
   });
 
-  io.on(SocketEvents.CONNECTION, (socket) => {
-    const roomId = socket.id;
-
-    socket.on(SocketEvents.JOIN_ROOM, () => {
-      socket.join(roomId);
-      io.to(roomId).emit(SocketEvents.USER_CONNECTED, {
-        userId: socket.id,
-        roomId: roomId,
-      });
-    });
-
-    socket.on(SocketGameEvents.BANG, (room: string, targetId) => {
-      io.to(room).emit(SocketGameEvents.BANG, { action: 'dmg' });
-    });
-
-    socket.on(SocketEvents.CHAT_MESSAGE, (msg) => {
-      io.to(roomId).emit('message', `${new Date().toISOString()}: ${msg}`);
-    });
+  instrument(io, {
+    auth: false,
+    mode: 'development',
   });
 
-  return io;
+  const onConnection = (socket: Socket) => {
+    playerHandler(io, socket);
+  };
+
+  io.use((socket, next) => {
+    const username = socket.handshake.auth.username;
+    if (!username) {
+      return next(new Error('invalid username'));
+    }
+    socket.username = username;
+    next();
+  });
+
+  io.on(SocketEventsEnum.CONNECTION, (socket: Socket) => {
+    socket.onAny((event, ...args) => console.log('logger: ', event, ...args));
+
+    onConnection(socket);
+  });
 }

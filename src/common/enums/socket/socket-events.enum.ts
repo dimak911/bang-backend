@@ -1,14 +1,13 @@
-export enum SocketEvents {
+export enum SocketEventsEnum {
   CONNECTION = 'connection',
   DISCONNECT = 'disconnect',
 
   JOIN_ROOM = 'join room',
   USER_CONNECTED = 'user connected',
+  USER_FIRST_CONNECTED = 'user first connected',
 
+  MESSAGE = 'message',
   CHAT_MESSAGE = 'chat message',
-}
 
-export enum SocketGameEvents {
-  BANG = 'bang',
-  MISS = 'miss',
+  ROOM_USERS = 'room users',
 }
