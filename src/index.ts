@@ -1,5 +1,4 @@
 import express from 'express';
-import { createServer } from 'http';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
@@ -15,13 +14,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const server = createServer(app);
-
 app.get('/', async (req, res) => {
   res.send('Works!');
 });
-
-setupSocketServer(server);
 
 async function run() {
   await mongoose.connect(MONGODB_URI, {
@@ -38,12 +33,14 @@ async function run() {
 
   runSeeders(mongoose.connection.db);
 
-  server.listen(PORT, () => {
+  const expressServer = app.listen(PORT, () => {
     console.log(
       '\x1b[32m%s\x1b[0m',
       `Server running at port ${PORT} 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀`,
     );
   });
+
+  setupSocketServer(expressServer);
 }
 
 run().catch(console.dir);
