@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
-import { PlayerHandler } from '../services/sockets/playerHandler';
+import { playerHandler } from '../services/sockets/player.handler';
 import { instrument } from '@socket.io/admin-ui';
 
 declare module 'socket.io' {
@@ -10,7 +10,7 @@ declare module 'socket.io' {
   }
 }
 
-export function setupSocketServer(server: http.Server): Server {
+export function setupSocketServer(server: http.Server): void {
   const io = new Server(server, {
     cors: {
       origin: [
@@ -28,7 +28,7 @@ export function setupSocketServer(server: http.Server): Server {
   });
 
   const onConnection = (socket: Socket) => {
-    PlayerHandler(io, socket);
+    playerHandler(io, socket);
   };
 
   io.use((socket, next) => {
@@ -45,6 +45,4 @@ export function setupSocketServer(server: http.Server): Server {
 
     onConnection(socket);
   });
-
-  return io;
 }

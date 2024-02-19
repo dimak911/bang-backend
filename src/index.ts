@@ -21,7 +21,7 @@ app.get('/', async (req, res) => {
   res.send('Works!');
 });
 
-const io = setupSocketServer(server);
+setupSocketServer(server);
 
 async function run() {
   await mongoose.connect(MONGODB_URI, {
