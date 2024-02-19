@@ -7,9 +7,10 @@ export const playerHandler = (io: Server, socket: Socket) => {
     users.push({
       userId: id,
       username: socket.username,
+      connected: true,
     });
   }
-  socket.emit(SocketEventsEnum.ROOM_USERS, users);
+  io.emit(SocketEventsEnum.ROOM_USERS, users);
 
   socket.emit(SocketEventsEnum.USER_FIRST_CONNECTED, {
     userId: socket.id,
@@ -21,11 +22,14 @@ export const playerHandler = (io: Server, socket: Socket) => {
   });
 
   socket.on(SocketEventsEnum.MESSAGE, ({ message, to }) => {
-    console.log('sending message');
     socket.to(to).emit(SocketEventsEnum.CHAT_MESSAGE, {
       message: message,
       from: socket.id,
     });
+  });
+
+  socket.on(SocketEventsEnum.DISCONNECT, () => {
+    socket.broadcast.emit(SocketEventsEnum.DISCONNECTED, { userId: socket.id });
   });
 
   // socket.on(SocketEventsEnum.JOIN_ROOM, (room: string | undefined) => {
