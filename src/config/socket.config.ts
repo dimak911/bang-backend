@@ -3,6 +3,7 @@ import * as http from 'http';
 import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
 import { playerHandler } from '../services/sockets/player.handler';
 import { instrument } from '@socket.io/admin-ui';
+import { RoomService } from '../services/room/room.service';
 
 declare module 'socket.io' {
   interface Socket {
@@ -42,7 +43,7 @@ export function setupSocketServer(server: http.Server): void {
 
   io.on(SocketEventsEnum.CONNECTION, (socket: Socket) => {
     socket.onAny((event, ...args) => console.log('logger: ', event, ...args));
-
+    RoomService.addToUserRoomOrCreate(socket)
     onConnection(socket);
   });
 }

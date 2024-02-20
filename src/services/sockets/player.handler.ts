@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 
 export const playerHandler = (io: Server, socket: Socket) => {
   const users = [];
-  for (const [id, socket] of io.of('/').sockets) {
+  for (const [id, socket]  of io.of('/').sockets) {
     users.push({
       userId: id,
       username: socket.username,
