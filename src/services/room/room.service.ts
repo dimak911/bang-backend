@@ -8,50 +8,54 @@ type Room = {
   owner: Player;
   players: Player[];
   id: string;
-}
+};
 
 namespace RoomService {
   const createRoom = async (username: string, id: string): Promise<Room> => {
-    const owner = {id, username};
+    const owner = { id, username };
     const room = {
-        owner,
-        players: [],
-        id,
+      owner,
+      players: [],
+      id,
     };
 
     await setData(`room-${room.id}`, room);
 
     return room;
-  }
+  };
 
   export const addToUserRoomOrCreate = async (socket: Socket) => {
-    const {username, roomId} = socket.handshake.auth as SocketAuth;
-    const id = socket.id
-    const room = await (roomId ? getDataByKey<Room>(`room-${roomId}`) : createRoom(username, id));
+    const { username, roomId } = socket.handshake.auth as SocketAuth;
+    const id = socket.id;
+    const room = await (roomId
+      ? getDataByKey<Room>(`room-${roomId}`)
+      : createRoom(username, id));
 
-    if(!room) {
+    if (!room) {
       socket.emit('error', {
         message: 'RoomNotFound',
-        code: 404
-      })
+        code: 404,
+      });
 
-     return;
+      return;
     }
 
-    socket.broadcast.to(room.id).emit('message', {user: 'admin', text: `Player ${username} has joined`})
+    socket.broadcast.to(room.id).emit('message', {
+      user: 'admin',
+      text: `Player ${username} has joined`,
+    });
 
     socket.join(room.id);
 
-    room.players.push({id, username});
+    room.players.push({ id, username });
 
     await setData(`room-${room.id}`, room);
 
     socket.emit(SocketEventsEnum.USER_FIRST_CONNECTED, {
       username: username,
-      roomId: room.id
-    })
-  }
-
+      roomId: room.id,
+    });
+  };
 }
 
-export {RoomService}
+export { RoomService };
