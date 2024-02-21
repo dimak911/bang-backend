@@ -26,6 +26,16 @@ namespace RoomService {
     return room;
   };
 
+  export const getExistingRoom = async (roomId: string) => {
+    const room = await RedisService.getRoomCache(roomId);
+
+    if (!room) {
+      throw new Error('Room not found');
+    }
+
+    return room;
+  };
+
   export const addToUserRoomOrCreate = async (socket: Socket) => {
     const { username, roomId } = socket.handshake.auth as SocketAuth;
     const id = socket.id;

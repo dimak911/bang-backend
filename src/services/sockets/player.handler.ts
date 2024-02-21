@@ -4,12 +4,11 @@ import { SocketEventsEnum } from '../../common/enums/socket/socket-events.enum';
 import { RedisService } from '../redis.service';
 import { SocketAuth } from '../room/types/socket-auth.type';
 import { PhaseEnum } from '../../common/enums/phase.enum';
+import { RoomService } from '../room/room.service';
 
 const playerHandler = (io: Server, socket: Socket) => {
   socket.on(SocketEventsEnum.ROOM_USERS, async (roomId) => {
-    const room = await RedisService.getRoomCache(roomId);
-
-    if (!room) return;
+    const room = await RoomService.getExistingRoom(roomId);
 
     io.to(room.id).emit(SocketEventsEnum.ROOM_USERS, room.players);
   });
@@ -24,9 +23,7 @@ const playerHandler = (io: Server, socket: Socket) => {
   });
 
   socket.on(SocketEventsEnum.MESSAGE, async ({ roomId, message }) => {
-    const room = await RedisService.getRoomCache(roomId);
-
-    if (!room) return;
+    const room = await RoomService.getExistingRoom(roomId);
 
     io.to(room.id).emit(SocketEventsEnum.MESSAGE, message);
   });
@@ -35,7 +32,7 @@ const playerHandler = (io: Server, socket: Socket) => {
     const { roomId, username } = socket.handshake.auth as SocketAuth;
 
     if (roomId) {
-      const room = await RedisService.getRoomCache(roomId);
+      const room = await RoomService.getExistingRoom(roomId);
 
       if (room?.phase === PhaseEnum.PREPARE) {
         room.players = room.players.filter(
