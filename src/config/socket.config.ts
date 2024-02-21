@@ -1,8 +1,9 @@
 import { Server, Socket } from 'socket.io';
-import * as http from 'http';
-import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
-import { playerHandler } from '../services/sockets/player.handler';
+import http from 'http';
 import { instrument } from '@socket.io/admin-ui';
+
+import { SocketEventsEnum } from '../common/enums/socket/socket-events.enum';
+import registerPlayerHandlers from '../services/sockets/player.handler';
 import { RoomService } from '../services/room/room.service';
 
 declare module 'socket.io' {
@@ -29,8 +30,12 @@ export function setupSocketServer(server: http.Server): void {
     mode: 'development',
   });
 
-  const onConnection = (socket: Socket) => {
-    playerHandler(io, socket);
+  const onConnection = (io: Server, socket: Socket) => {
+    socket.onAny((event, ...args) => console.log('logger: ', event, ...args));
+
+    RoomService.addToUserRoomOrCreate(socket);
+
+    registerPlayerHandlers(io, socket);
   };
 
   io.use((socket, next) => {
@@ -43,8 +48,6 @@ export function setupSocketServer(server: http.Server): void {
   });
 
   io.on(SocketEventsEnum.CONNECTION, (socket: Socket) => {
-    socket.onAny((event, ...args) => console.log('logger: ', event, ...args));
-    RoomService.addToUserRoomOrCreate(socket);
-    onConnection(socket);
+    onConnection(io, socket);
   });
 }

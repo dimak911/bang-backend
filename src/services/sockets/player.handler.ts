@@ -5,7 +5,7 @@ import { RedisService } from '../redis.service';
 import { SocketAuth } from '../room/types/socket-auth.type';
 import { PhaseEnum } from '../../common/enums/phase.enum';
 
-export const playerHandler = (io: Server, socket: Socket) => {
+const playerHandler = (io: Server, socket: Socket) => {
   socket.on(SocketEventsEnum.ROOM_USERS, async (roomId) => {
     const room = await RedisService.getRoomCache(roomId);
 
@@ -55,3 +55,5 @@ export const playerHandler = (io: Server, socket: Socket) => {
     }
   });
 };
+
+export default playerHandler;
