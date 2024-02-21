@@ -1,25 +1,27 @@
 import { Socket } from 'socket.io';
+
 import { SocketAuth } from './types/socket-auth.type';
-import { getDataByKey, setData } from '../redis.service';
 import { SocketEventsEnum } from '../../common/enums/socket/socket-events.enum';
+import { RoomType } from './types/room.type';
+import { RedisService } from '../redis.service';
+import { PhaseEnum } from '../../common/enums/phase.enum';
 import { Player } from './types/player.type';
 
-type Room = {
-  owner: Player;
-  players: Player[];
-  id: string;
-};
-
 namespace RoomService {
-  const createRoom = async (username: string, id: string): Promise<Room> => {
+  const createRoom = async (
+    username: string,
+    id: string,
+  ): Promise<RoomType> => {
     const owner = { id, username };
     const room = {
+      id,
       owner,
       players: [],
-      id,
+      phase: PhaseEnum.PREPARE,
+      sheriff: null,
     };
 
-    await setData(`room-${room.id}`, room);
+    await RedisService.setRoomCache(room.id, room);
 
     return room;
   };
@@ -27,8 +29,9 @@ namespace RoomService {
   export const addToUserRoomOrCreate = async (socket: Socket) => {
     const { username, roomId } = socket.handshake.auth as SocketAuth;
     const id = socket.id;
+
     const room = await (roomId
-      ? getDataByKey<Room>(`room-${roomId}`)
+      ? RedisService.getRoomCache(roomId)
       : createRoom(username, id));
 
     if (!room) {
@@ -40,16 +43,34 @@ namespace RoomService {
       return;
     }
 
-    socket.broadcast.to(room.id).emit('message', {
+    socket.broadcast.to(room.id).emit(SocketEventsEnum.ROOM_LOG, {
+      id: crypto.randomUUID(),
       user: 'admin',
       text: `Player ${username} has joined`,
     });
 
     socket.join(room.id);
 
-    room.players.push({ id, username });
+    const existingPlayerIndex = room.players.findIndex(
+      (player) => player.username === username,
+    );
 
-    await setData(`room-${room.id}`, room);
+    if (existingPlayerIndex < 0) {
+      const newPlayer: Player = {
+        id,
+        username,
+        health: 0,
+        character: null,
+        role: null,
+        weapon: null,
+      };
+
+      room.players.push(newPlayer);
+    } else {
+      room.players[existingPlayerIndex].id = socket.id;
+    }
+
+    await RedisService.setRoomCache(room.id, room);
 
     socket.emit(SocketEventsEnum.USER_FIRST_CONNECTED, {
       username: username,

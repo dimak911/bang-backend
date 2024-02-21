@@ -18,6 +18,7 @@ export function setupSocketServer(server: http.Server): void {
         'https://admin.socket.io',
         'http://localhost:3003',
         'http://localhost:3000',
+        'http://localhost:3001',
       ],
       credentials: true,
     },
@@ -43,7 +44,7 @@ export function setupSocketServer(server: http.Server): void {
 
   io.on(SocketEventsEnum.CONNECTION, (socket: Socket) => {
     socket.onAny((event, ...args) => console.log('logger: ', event, ...args));
-    RoomService.addToUserRoomOrCreate(socket)
+    RoomService.addToUserRoomOrCreate(socket);
     onConnection(socket);
   });
 }

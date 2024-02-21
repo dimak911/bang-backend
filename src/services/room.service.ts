@@ -1,35 +1,30 @@
-import { Player } from '../common/interfaces/player.interface';
 import { PhaseEnum } from '../common/enums/phase.enum';
 import { RoleEnum } from '../common/enums/role.enum';
 import assignRoleToPlayerUtil from '../utils/assign-role-to-player.util';
-import { getDataByKey, setData } from './redis.service';
 import CharacterModel from '../models/Character/character.model';
-
-export interface RoomState {
-  roomId: string;
-  players: Player[];
-  phase: PhaseEnum;
-  sheriff: Player | null;
-}
+import { RedisService } from './redis.service';
+import { RoomType } from './room/types/room.type';
+import { Player } from './room/types/player.type';
 
 export async function createRoomState(
   roomId: string,
   roomOwner: Player,
-): Promise<RoomState> {
-  const state: RoomState = {
-    roomId,
+): Promise<RoomType> {
+  const state: RoomType = {
+    id: roomId,
+    owner: roomOwner,
     players: [roomOwner],
     phase: PhaseEnum.PREPARE,
     sheriff: null,
   };
 
-  await setData<RoomState>(state.roomId, state);
+  await RedisService.setData<RoomType>(state.id, state);
 
   return state;
 }
 
-export async function getExistingRoomState(roomId: string): Promise<RoomState> {
-  const roomState = await getDataByKey<RoomState>(roomId);
+export async function getExistingRoomState(roomId: string): Promise<RoomType> {
+  const roomState = await RedisService.getDataByKey<RoomType>(roomId);
 
   if (!roomState) {
     throw new Error('Room not found');
@@ -46,7 +41,7 @@ export async function joinPlayerToRoom(
 
   roomState.players.push(newPlayer);
 
-  await setData<RoomState>(roomId, roomState);
+  await RedisService.setData<RoomType>(roomId, roomState);
 }
 
 export async function removePlayerFromRoom(
@@ -56,13 +51,13 @@ export async function removePlayerFromRoom(
   const roomState = await getExistingRoomState(roomId);
 
   roomState.players = roomState.players.filter(
-    (player) => player.uuid !== playerId,
+    (player) => player.id !== playerId,
   );
 
-  await setData<RoomState>(roomId, roomState);
+  await RedisService.setData<RoomType>(roomId, roomState);
 }
 
-export async function beforeStartRoomState(roomId: string): Promise<RoomState> {
+export async function beforeStartRoomState(roomId: string): Promise<RoomType> {
   const roomState = await getExistingRoomState(roomId);
 
   if (roomState.players.length < 4 || roomState.players.length > 7) {
@@ -80,10 +75,9 @@ export async function beforeStartRoomState(roomId: string): Promise<RoomState> {
 
   roomState.players = playersWithRoles.map((player) => {
     return {
-      uuid: player.uuid,
-      socketId: player.socketId,
+      id: player.id,
       character: player.character,
-      userName: player.userName,
+      username: player.username,
       health: player.health,
       weapon: player.weapon,
     } as Player;
@@ -91,7 +85,7 @@ export async function beforeStartRoomState(roomId: string): Promise<RoomState> {
   roomState.phase = PhaseEnum.PREPARE;
   roomState.sheriff = sheriff;
 
-  await setData<RoomState>(roomId, roomState);
+  await RedisService.setData<RoomType>(roomId, roomState);
 
   return roomState;
 }

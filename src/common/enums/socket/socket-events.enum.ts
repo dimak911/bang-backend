@@ -3,12 +3,14 @@ export enum SocketEventsEnum {
   DISCONNECTED = 'disconnected',
   DISCONNECT = 'disconnect',
 
-  JOIN_ROOM = 'join room',
-  USER_CONNECTED = 'user connected',
-  USER_FIRST_CONNECTED = 'user first connected',
+  JOIN_ROOM = 'joinRoom',
+  USER_CONNECTED = 'userConnected',
+  USER_FIRST_CONNECTED = 'userFirstConnected',
 
   MESSAGE = 'message',
-  CHAT_MESSAGE = 'chat message',
+  CHAT_MESSAGE = 'chatMessage',
 
-  ROOM_USERS = 'room users',
+  ROOM_USERS = 'roomUsers',
+
+  ROOM_LOG = 'roomLog',
 }

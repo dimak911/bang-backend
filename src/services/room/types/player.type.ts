@@ -1,9 +1,13 @@
-import { ICharacter } from '../../../models/Character/character.interface';
+import { Types } from 'mongoose';
+
+import { ICard } from '../../../models/Card/card.interface';
 import { RoleEnum } from '../../../common/enums/role.enum';
 
 export type Player = {
-  username: string;
-  hero?: ICharacter;
-  role?: RoleEnum;
   id: string;
-}
+  username: string;
+  role: RoleEnum | null;
+  character: Types.ObjectId | null;
+  health: number;
+  weapon: null | ICard;
+};
